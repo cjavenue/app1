@@ -154,6 +154,12 @@ textarea {
 .map-host {
   position: absolute;
   inset: 0;
+  /* MapLibre adds `.maplibregl-map { position: relative }` to this element,
+     which overrides `position: absolute` (equal specificity, its sheet loads
+     last). Without an explicit size the container then collapses to 0 height
+     and the GL canvas renders black. Pin width/height so it always fills. */
+  width: 100%;
+  height: 100%;
 }
 .online-badge {
   position: absolute;

@@ -35,16 +35,11 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
   const ready = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [dbg, setDbg] = useState('init');
 
   // Init once.
   useEffect(() => {
     if (!hostRef.current || mapRef.current) return;
     const host = hostRef.current;
-    const mark = (s: string) =>
-      setDbg((d) => (d.split(' ').includes(s) ? d : `${d} ${s}`));
-    const size = () => `${Math.round(host.clientWidth)}x${Math.round(host.clientHeight)}`;
-    setDbg(`size ${size()} webgl:${!!document.createElement('canvas').getContext('webgl')}`);
     let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
@@ -65,17 +60,11 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
       const msg = e?.error?.message ?? 'Unknown map error';
       setError(msg);
     });
-    map.on('styledata', () => mark('style'));
-    map.on('sourcedata', (e) => {
-      if ((e as maplibregl.MapSourceDataEvent).isSourceLoaded) mark('tiles');
-    });
-    map.on('idle', () => mark(`idle@${size()}`));
 
     map.on('load', () => {
       ready.current = true;
       setError(null);
       setLoaded(true);
-      mark('load');
       map.addSource('radius', { type: 'geojson', data: empty });
       map.addLayer({ id: 'radius-fill', type: 'fill', source: 'radius', paint: { 'fill-color': colors.turquoise, 'fill-opacity': 0.06 } });
       map.addLayer({ id: 'radius-line', type: 'line', source: 'radius', paint: { 'line-color': colors.turquoise, 'line-width': 1.5, 'line-opacity': 0.4 } });
@@ -133,27 +122,6 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
   return (
     <>
       <div ref={hostRef} className="map-host" />
-      {/* Temporary on-device diagnostic for the blank-map issue. */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 'calc(env(safe-area-inset-top) + 10px)',
-          right: 10,
-          maxWidth: '62%',
-          background: 'rgba(0,0,0,0.6)',
-          color: '#7dd3fc',
-          borderRadius: 8,
-          padding: '4px 8px',
-          fontSize: 10,
-          fontFamily: 'monospace',
-          lineHeight: 1.3,
-          textAlign: 'right',
-          pointerEvents: 'none',
-          zIndex: 5,
-        }}
-      >
-        {dbg}
-      </div>
       {!loaded && !error && (
         <div
           style={{

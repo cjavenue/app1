@@ -1,0 +1,62 @@
+name: Deploy Web PWA
+
+# Builds the /web PWA on every push (CI), and auto-deploys to Netlify when the
+# Netlify secrets are present. Deploy step is skipped (build still runs) if they
+# aren't set yet, so this never hard-fails before you've configured it.
+#
+# Required GitHub repo secrets:
+#   Build  : VITE_STADIA_API_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+#   Deploy : NETLIFY_AUTH_TOKEN, NETLIFY_SITE_ID
+# (Settings → Secrets and variables → Actions)
+
+on:
+  push:
+    branches: [claude/mobile-app-creation-QBSMB, main]
+    paths:
+      - 'web/**'
+      - 'netlify.toml'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch:
+
+# Avoid overlapping deploys for rapid pushes.
+concurrency:
+  group: deploy-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        env:
+          VITE_STADIA_API_KEY: ${{ secrets.VITE_STADIA_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Deploy to Netlify
+        if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: web/dist
+          production-deploy: true
+          deploy-message: ${{ github.event.head_commit.message }}
+          enable-pull-request-comment: false
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

@@ -68,6 +68,19 @@ VITE_SUPABASE_ANON_KEY= <your Supabase publishable key>
 Then on your iPhone: open the deployed `https://…` URL in **Safari → Share →
 Add to Home Screen**. It launches full-screen like a native app.
 
+### Auto-deploy via GitHub Actions (optional)
+
+`.github/workflows/deploy-web.yml` builds on every push and deploys to Netlify.
+Add these **repo secrets** (Settings → Secrets and variables → Actions):
+
+- Build: `VITE_STADIA_API_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+- Deploy: `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID`
+
+The build always runs (acts as CI); the deploy step is **skipped** until the
+Netlify secrets exist, so it never fails before you've set it up. (If you connect
+the repo directly in the Netlify/Vercel dashboard instead, that already
+auto-deploys on push — you don't need both.)
+
 > Tip: a quick no-git option is `npm run build` then drag the `web/dist` folder
 > onto Netlify Drop (app.netlify.com/drop) — but you'd bake the env vars in at
 > build time locally first.

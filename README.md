@@ -34,8 +34,9 @@ Implemented so far:
 - **One-time rename** — the nickname can be changed exactly once; uniqueness
   (case-insensitive), length (4–20), charset, and a profanity blocklist are
   enforced **server-side** in `set_nickname()`.
-- **Cross-device sign-in** — after verifying, Google/Apple buttons appear
-  (provider wiring is the next step; the UI is in place).
+- **Cross-device sign-in** — after verifying, the user can **link Google**
+  (free) to sign in on another device later. **Apple sign-in** is deferred — it
+  requires the Apple Developer Program ($99/yr) — and is shown as disabled.
 
 ## Tech stack
 
@@ -90,6 +91,11 @@ supabase/migrations/         0001 presence (PostGIS, RLS) · 0002 profiles + 24h
      unverified profiles are purged every 15 min.
    - For email verification in production, configure **custom SMTP**
      (Authentication → Email). Supabase's built-in mailer works for light dev use.
+   - For **Google sign-in** (free): enable the Google provider (Authentication →
+     Providers) with a Google Cloud OAuth client, add the redirect URL
+     `nearby://auth-callback` to the allow-list (Authentication → URL
+     Configuration), and turn on **Allow manual linking** (Authentication →
+     Settings) so verified users can attach Google.
 
 4. **Native build** — `@maplibre/maplibre-react-native` needs a custom dev
    client (it does **not** run in Expo Go), but requires no extra tokens — the

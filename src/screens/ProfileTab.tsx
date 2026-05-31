@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import { brandGradient, colors } from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import { EditNicknameModal } from '../components/EditNicknameModal';
 import { VerifyEmailModal } from '../components/VerifyEmailModal';
+import { linkGoogle } from '../services/oauth';
 
 function initials(name: string): string {
   const clean = name.replace(/[^A-Za-z0-9]/g, '');
@@ -25,9 +26,25 @@ export function ProfileTab() {
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [verifyOpen, setVerifyOpen] = useState(false);
+  const [linkingGoogle, setLinkingGoogle] = useState(false);
 
-  const oauthSoon = () =>
-    Alert.alert('Almost there', 'Google & Apple sign-in turns on once those providers are configured.');
+  const connectGoogle = async () => {
+    setLinkingGoogle(true);
+    const res = await linkGoogle();
+    setLinkingGoogle(false);
+    if (res.ok) {
+      await p.reload();
+      Alert.alert('Connected', 'Google is now linked — you can use it to sign in next time.');
+    } else {
+      Alert.alert('Google sign-in', res.message);
+    }
+  };
+
+  const appleInfo = () =>
+    Alert.alert(
+      'Apple sign-in',
+      'Sign in with Apple needs an Apple Developer account ($99/year). We’ll enable it once that’s set up.'
+    );
 
   if (!profile) {
     return (
@@ -129,13 +146,23 @@ export function ProfileTab() {
         {profile.emailVerified && (
           <View style={styles.signinBlock}>
             <Text style={styles.signinHint}>Sign in faster next time</Text>
-            <Pressable style={styles.oauthBtn} onPress={oauthSoon}>
-              <Ionicons name="logo-google" size={18} color={colors.text} />
-              <Text style={styles.oauthLabel}>Continue with Google</Text>
+            <Pressable
+              style={[styles.oauthBtn, linkingGoogle && styles.oauthBtnBusy]}
+              onPress={connectGoogle}
+              disabled={linkingGoogle}
+            >
+              {linkingGoogle ? (
+                <ActivityIndicator color={colors.text} />
+              ) : (
+                <>
+                  <Ionicons name="logo-google" size={18} color={colors.text} />
+                  <Text style={styles.oauthLabel}>Continue with Google</Text>
+                </>
+              )}
             </Pressable>
-            <Pressable style={styles.oauthBtn} onPress={oauthSoon}>
-              <Ionicons name="logo-apple" size={20} color={colors.text} />
-              <Text style={styles.oauthLabel}>Continue with Apple</Text>
+            <Pressable style={[styles.oauthBtn, styles.oauthBtnDisabled]} onPress={appleInfo}>
+              <Ionicons name="logo-apple" size={20} color={colors.textMuted} />
+              <Text style={[styles.oauthLabel, styles.oauthLabelMuted]}>Apple — needs dev account</Text>
             </Pressable>
           </View>
         )}
@@ -232,5 +259,8 @@ const styles = StyleSheet.create({
     gap: 10,
     height: 52,
   },
+  oauthBtnBusy: { opacity: 0.7 },
+  oauthBtnDisabled: { opacity: 0.6 },
   oauthLabel: { color: colors.text, fontSize: 15, fontWeight: '600' },
+  oauthLabelMuted: { color: colors.textMuted },
 });

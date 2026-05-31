@@ -94,7 +94,7 @@ security definer
 set search_path = public
 as $$
   select
-    encode(digest(p.user_id::text, 'sha256'), 'hex') as id,
+    md5(p.user_id::text) as id,
     round(ST_Y(p.location::geometry)::numeric, 3)::double precision as lat,
     round(ST_X(p.location::geometry)::numeric, 3)::double precision as lng,
     ST_Distance(
@@ -111,9 +111,6 @@ as $$
       p_radius_m
     );
 $$;
-
--- pgcrypto provides digest() for the hashed id above.
-create extension if not exists pgcrypto;
 
 grant execute on function public.upsert_presence(text, double precision, double precision) to authenticated;
 grant execute on function public.go_invisible() to authenticated;

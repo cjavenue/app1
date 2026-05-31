@@ -34,12 +34,7 @@
           "locationWhenInUsePermission": "Nearby uses your location to show what's happening around you and connect you with people nearby in real time."
         }
       ],
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsDownloadToken": "SET_VIA_EAS_SECRET_OR_ENV"
-        }
-      ]
+      "@maplibre/maplibre-react-native"
     ]
   }
 }

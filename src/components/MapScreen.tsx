@@ -1,22 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Mapbox, {
+import {
   Camera,
-  FillLayer,
-  LineLayer,
-  LocationPuck,
-  MapView,
-  ShapeSource,
-} from '@rnmapbox/maps';
+  type CameraRef,
+  GeoJSONSource,
+  Layer,
+  Map,
+  UserLocation,
+} from '@maplibre/maplibre-react-native';
 import { colors } from '../theme/colors';
-import { config, isMapboxConfigured } from '../lib/config';
+import { config, isMapConfigured, mapStyleUrl } from '../lib/config';
 import { circlePolygon } from '../lib/geo';
 import type { Coords } from '../hooks/useLocation';
 import type { NearbyUser } from '../hooks/usePresence';
-
-if (isMapboxConfigured()) {
-  Mapbox.setAccessToken(config.mapbox.accessToken);
-}
 
 interface Props {
   coords: Coords | null;
@@ -24,32 +20,34 @@ interface Props {
   recenterSignal: number; // bump to recenter the camera on the user
 }
 
+const DEFAULT_ZOOM = 13.5;
+
 /**
- * The live map canvas: dark Mapbox style, the user's location puck, a 5km
- * radius ring, and markers for nearby online users.
+ * The live map canvas: dark Stadia (MapLibre) style, the user's location puck,
+ * a 5km radius ring, and markers for nearby online users.
  *
- * Falls back to a styled placeholder when no Mapbox token is configured yet,
- * so the rest of the UI (overlays, sheet) remains demonstrable.
+ * Falls back to a styled placeholder when no Stadia key is configured yet, so
+ * the rest of the UI (overlays, sheet) remains demonstrable.
  */
 export function MapScreen({ coords, nearby, recenterSignal }: Props) {
-  const camera = useRef<Camera>(null);
+  const camera = useRef<CameraRef>(null);
 
   useEffect(() => {
     if (coords && camera.current) {
-      camera.current.setCamera({
-        centerCoordinate: [coords.longitude, coords.latitude],
-        zoomLevel: 13.5,
-        animationDuration: 700,
+      camera.current.flyTo({
+        center: [coords.longitude, coords.latitude],
+        zoom: DEFAULT_ZOOM,
+        duration: 700,
       });
     }
   }, [coords, recenterSignal]);
 
-  if (!isMapboxConfigured()) {
+  if (!isMapConfigured()) {
     return (
       <View style={styles.fallback}>
         <Text style={styles.fallbackTitle}>Map preview</Text>
         <Text style={styles.fallbackHint}>
-          Add EXPO_PUBLIC_MAPBOX_TOKEN to .env to render the live map here.
+          Add EXPO_PUBLIC_STADIA_API_KEY to .env to render the live map here.
         </Text>
       </View>
     );
@@ -70,45 +68,49 @@ export function MapScreen({ coords, nearby, recenterSignal }: Props) {
   };
 
   return (
-    <MapView
+    <Map
       style={StyleSheet.absoluteFill}
-      styleURL={config.mapbox.styleUrl}
-      scaleBarEnabled={false}
-      logoEnabled={false}
-      attributionEnabled={false}
-      compassEnabled={false}
-      pitchEnabled={false}
-      rotateEnabled={false}
+      mapStyle={mapStyleUrl()}
+      compass={false}
+      logo={false}
+      attribution={false}
+      scaleBar={false}
     >
       <Camera
         ref={camera}
-        defaultSettings={{
-          centerCoordinate: coords ? [coords.longitude, coords.latitude] : [0, 0],
-          zoomLevel: coords ? 13.5 : 1,
-        }}
+        center={coords ? [coords.longitude, coords.latitude] : [0, 0]}
+        zoom={coords ? DEFAULT_ZOOM : 1}
       />
 
       {ring && (
-        <ShapeSource id="radius" shape={ring}>
-          <FillLayer
+        <GeoJSONSource id="radius" data={ring}>
+          <Layer
+            type="fill"
             id="radius-fill"
+            source="radius"
             style={{ fillColor: colors.turquoise, fillOpacity: 0.06 }}
           />
-          <LineLayer
+          <Layer
+            type="line"
             id="radius-line"
+            source="radius"
             style={{ lineColor: colors.turquoise, lineWidth: 1.5, lineOpacity: 0.4 }}
           />
-        </ShapeSource>
+        </GeoJSONSource>
       )}
 
       {nearby.length > 0 && (
-        <ShapeSource id="nearby" shape={nearbyFeatures}>
-          <Mapbox.CircleLayer
+        <GeoJSONSource id="nearby" data={nearbyFeatures}>
+          <Layer
+            type="circle"
             id="nearby-glow"
+            source="nearby"
             style={{ circleRadius: 14, circleColor: colors.green, circleOpacity: 0.18 }}
           />
-          <Mapbox.CircleLayer
+          <Layer
+            type="circle"
             id="nearby-dot"
+            source="nearby"
             style={{
               circleRadius: 6,
               circleColor: colors.green,
@@ -116,15 +118,11 @@ export function MapScreen({ coords, nearby, recenterSignal }: Props) {
               circleStrokeColor: colors.bg,
             }}
           />
-        </ShapeSource>
+        </GeoJSONSource>
       )}
 
-      <LocationPuck
-        visible
-        puckBearing="heading"
-        pulsing={{ isEnabled: true, color: colors.turquoise, radius: 28 }}
-      />
-    </MapView>
+      <UserLocation animated accuracy heading />
+    </Map>
   );
 }
 

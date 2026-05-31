@@ -2,7 +2,7 @@
 
 A real-time, location-based social map. See what's happening around you and
 connect with people nearby. Built with Expo (React Native) + TypeScript,
-Mapbox, and Supabase.
+MapLibre + Stadia Maps, and Supabase.
 
 > Working title — rename `name` in `app.json` anytime.
 
@@ -10,7 +10,7 @@ Mapbox, and Supabase.
 
 Implemented so far (the two foundation screens):
 
-1. **Map screen** — dark Mapbox canvas with a live location puck, a 5 km
+1. **Map screen** — dark MapLibre canvas (Stadia style) with a live location puck, a 5 km
    "neighborhood" radius ring, floating controls (layers · compose · recenter),
    a top-left **● N | Online** presence badge, and a gradient **+ Post Status**
    CTA (placeholder — wired up in a later step).
@@ -24,7 +24,7 @@ Implemented so far (the two foundation screens):
 | Concern        | Choice                                     |
 | -------------- | ------------------------------------------ |
 | App            | Expo (React Native) + TypeScript, New Arch |
-| Map            | Mapbox (`@rnmapbox/maps`)                  |
+| Map            | MapLibre (`@maplibre/maplibre-react-native`) + Stadia Maps dark style |
 | Location       | `expo-location` (foreground)               |
 | Backend        | Supabase (Postgres + PostGIS + Auth)       |
 | Identity       | Anonymous Supabase auth (no PII)           |
@@ -55,7 +55,7 @@ supabase/migrations/         PostGIS schema, RLS, presence RPCs
    ```
 
 2. **Configure env** — copy `.env.example` to `.env` and fill in:
-   - `EXPO_PUBLIC_MAPBOX_TOKEN` — public token (`pk.…`) from Mapbox
+   - `EXPO_PUBLIC_STADIA_API_KEY` — free key (no card) from https://client.stadiamaps.com/
    - `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 
    Until these are set, the map shows a placeholder and the online count
@@ -69,10 +69,9 @@ supabase/migrations/         PostGIS schema, RLS, presence RPCs
 
    Then enable **Anonymous sign-ins** in Supabase → Authentication → Providers.
 
-4. **Mapbox native build** — `@rnmapbox/maps` needs a custom dev client (it does
-   **not** run in Expo Go). Provide a Mapbox **secret** download token (`sk.…`)
-   as an EAS secret / env, referenced by the `@rnmapbox/maps` plugin in
-   `app.json`, then:
+4. **Native build** — `@maplibre/maplibre-react-native` needs a custom dev
+   client (it does **not** run in Expo Go), but requires no extra tokens — the
+   Expo config plugin in `app.json` handles the native setup. Then:
 
    ```bash
    npx expo run:ios       # or run:android, or eas build

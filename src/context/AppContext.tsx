@@ -3,9 +3,11 @@ import { useLocation, type Coords, type LocationPermissionState } from '../hooks
 import { usePresence } from '../hooks/usePresence';
 import { useProfile } from '../hooks/useProfile';
 import { useStatuses } from '../hooks/useStatuses';
+import { useMeetups } from '../hooks/useMeetups';
 
 type UseProfileReturnT = ReturnType<typeof useProfile>;
 type UseStatusesReturnT = ReturnType<typeof useStatuses>;
+type UseMeetupsReturnT = ReturnType<typeof useMeetups>;
 
 interface AppContextValue {
   permission: LocationPermissionState;
@@ -21,6 +23,7 @@ interface AppContextValue {
 
   profile: UseProfileReturnT;
   statuses: UseStatusesReturnT;
+  meetups: UseMeetupsReturnT;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -34,6 +37,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const locationReady = coords !== null;
   const profile = useProfile(locationReady);
   const statuses = useStatuses(coords);
+  const meetups = useMeetups(locationReady);
 
   const value = useMemo<AppContextValue>(
     () => ({
@@ -47,8 +51,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       displayCount: onlineCount + (coords ? 1 : 0),
       profile,
       statuses,
+      meetups,
     }),
-    [permission, coords, locationReady, requestAndStart, useManual, onlineCount, nearby, profile, statuses]
+    [permission, coords, locationReady, requestAndStart, useManual, onlineCount, nearby, profile, statuses, meetups]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

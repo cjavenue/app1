@@ -27,6 +27,11 @@ Implemented so far:
    replaces the old); each auto-expires after ~3h. Shown as map pins and in the
    Statuses feed. Reads go through the `nearby_statuses` RPC (coarse coords,
    no contact info).
+6. **Ask to join → Meetups** — tap **Ask to join** on someone's status to send a
+   request; the host sees it in the Statuses tab and **Accepts/Declines**. On
+   accept it becomes a meetup and both profiles' **Meetups** counter goes up.
+   All mutations run through RPCs with role checks (`request_to_join`,
+   `respond_to_join`, `cancel_join`); rows are visible only to the two parties.
 
 ## Profiles & identity lifecycle
 
@@ -90,8 +95,8 @@ supabase/migrations/         0001 presence (PostGIS, RLS) · 0002 profiles + 24h
    stays at 1 (just you) — the UI still runs.
 
 3. **Database** — apply the migrations in order (SQL editor or
-   `supabase db push`): `0001_init.sql`, `0002_profiles.sql`, `0003_statuses.sql`.
-   Then:
+   `supabase db push`): `0001_init.sql`, `0002_profiles.sql`, `0003_statuses.sql`,
+   `0004_meetups.sql`. Then:
    - Enable **Anonymous sign-ins** (Authentication → Providers).
    - Enable the **pg_cron** extension (Database → Extensions) and uncomment the
      `cron.schedule(...)` block at the bottom of `0002_profiles.sql` so

@@ -8,7 +8,10 @@
 //
 // To rotate or point at a different project, just edit this file.
 window.__NEARBY_CONFIG__ = {
-  STADIA_API_KEY: 'd67a8ada-9108-4329-ad56-3461b6f7ac47',
+  // Map uses a keyless dark basemap by default (no domain setup needed).
+  // To use Stadia instead: put your key here AND add this domain to the
+  // allowed domains in your Stadia dashboard.
+  STADIA_API_KEY: '',
   MAP_STYLE: '',
   SUPABASE_URL: 'https://jblvzezhvqgexlrtbfir.supabase.co',
   SUPABASE_ANON_KEY: 'sb_publishable_frCPpPDWDr6cjM6HqG_D4Q_UTmwqCPy',

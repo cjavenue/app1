@@ -130,18 +130,23 @@ function VerifyModal({ onClose }: { onClose: () => void }) {
 }
 
 export function ProfileScreen() {
-  const { profile: p } = useApp();
+  const { profile: p, coords } = useApp();
   const profile = p.profile;
   const install = useInstall();
   const [rename, setRename] = useState(false);
   const [verify, setVerify] = useState(false);
 
   if (!profile) {
+    const message = p.loading
+      ? 'Loading your profile…'
+      : !coords
+        ? 'Share your location to create a profile.'
+        : "Couldn't load your profile. Make sure the Supabase database is set up (run migrations 0001–0004 and enable Anonymous sign-ins).";
     return (
       <div className="screen">
         <div className="header"><h1>Profile</h1></div>
-        <div className="muted" style={{ textAlign: 'center', marginTop: 60 }}>
-          {p.loading ? 'Loading your profile…' : 'Share your location to create a profile.'}
+        <div className="muted" style={{ textAlign: 'center', marginTop: 60, padding: '0 28px', lineHeight: 1.5 }}>
+          {message}
         </div>
       </div>
     );

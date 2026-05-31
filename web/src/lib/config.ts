@@ -39,7 +39,7 @@ const cartoDarkRaster = (): StyleSpecification => ({
     },
   },
   layers: [
-    { id: 'bg', type: 'background', paint: { 'background-color': '#0b0f14' } },
+    { id: 'bg', type: 'background', paint: { 'background-color': '#0F1316' } },
     { id: 'carto', type: 'raster', source: 'carto' },
   ],
 });

@@ -178,14 +178,14 @@ export function ProfileScreen() {
       <div className="header"><h1>Profile</h1></div>
       <div className="scroll" style={{ padding: '0 16px 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: 22 }}>
-          <div style={{ width: 110, height: 110, borderRadius: 55, margin: '8px auto 16px', background: 'linear-gradient(135deg,var(--turquoise),var(--green))', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 38, fontWeight: 800 }}>
+          <div style={{ width: 110, height: 110, borderRadius: 55, margin: '8px auto 16px', background: 'linear-gradient(135deg,var(--teal),var(--yellow))', color: '#0F1316', display: 'grid', placeItems: 'center', fontSize: 38, fontWeight: 800 }}>
             {initials(profile.nickname)}
           </div>
           <div style={{ fontSize: 26, fontWeight: 800 }}>{profile.nickname}</div>
         </div>
 
         {profile.emailVerified ? (
-          <div className="card" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, borderColor: 'rgba(52,211,153,0.35)' }}>
+          <div className="card" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, borderColor: 'rgba(26,167,160,0.35)' }}>
             <span style={{ fontSize: 20 }}>🛡️</span>
             <div>
               <div style={{ fontWeight: 700 }}>Email verified</div>

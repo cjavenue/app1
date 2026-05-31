@@ -66,17 +66,17 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
       setError(null);
       setLoaded(true);
       map.addSource('radius', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'radius-fill', type: 'fill', source: 'radius', paint: { 'fill-color': colors.turquoise, 'fill-opacity': 0.06 } });
-      map.addLayer({ id: 'radius-line', type: 'line', source: 'radius', paint: { 'line-color': colors.turquoise, 'line-width': 1.5, 'line-opacity': 0.4 } });
+      map.addLayer({ id: 'radius-fill', type: 'fill', source: 'radius', paint: { 'fill-color': colors.teal, 'fill-opacity': 0.06 } });
+      map.addLayer({ id: 'radius-line', type: 'line', source: 'radius', paint: { 'line-color': colors.teal, 'line-width': 1.5, 'line-opacity': 0.4 } });
       map.addSource('nearby', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'nearby-glow', type: 'circle', source: 'nearby', paint: { 'circle-radius': 14, 'circle-color': colors.green, 'circle-opacity': 0.18 } });
-      map.addLayer({ id: 'nearby-dot', type: 'circle', source: 'nearby', paint: { 'circle-radius': 6, 'circle-color': colors.green, 'circle-stroke-width': 2, 'circle-stroke-color': colors.bg } });
+      map.addLayer({ id: 'nearby-glow', type: 'circle', source: 'nearby', paint: { 'circle-radius': 14, 'circle-color': colors.teal, 'circle-opacity': 0.18 } });
+      map.addLayer({ id: 'nearby-dot', type: 'circle', source: 'nearby', paint: { 'circle-radius': 6, 'circle-color': colors.teal, 'circle-stroke-width': 2, 'circle-stroke-color': colors.bg } });
       map.addSource('statuses', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'status-glow', type: 'circle', source: 'statuses', paint: { 'circle-radius': 16, 'circle-color': colors.turquoise, 'circle-opacity': 0.2 } });
-      map.addLayer({ id: 'status-dot', type: 'circle', source: 'statuses', paint: { 'circle-radius': 8, 'circle-color': colors.turquoise, 'circle-stroke-width': 2, 'circle-stroke-color': colors.white } });
+      map.addLayer({ id: 'status-glow', type: 'circle', source: 'statuses', paint: { 'circle-radius': 16, 'circle-color': colors.yellow, 'circle-opacity': 0.22 } });
+      map.addLayer({ id: 'status-dot', type: 'circle', source: 'statuses', paint: { 'circle-radius': 8, 'circle-color': colors.yellow, 'circle-stroke-width': 2, 'circle-stroke-color': colors.bg } });
       map.addSource('me', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'me-glow', type: 'circle', source: 'me', paint: { 'circle-radius': 18, 'circle-color': colors.turquoiseLight, 'circle-opacity': 0.25 } });
-      map.addLayer({ id: 'me-dot', type: 'circle', source: 'me', paint: { 'circle-radius': 7, 'circle-color': '#3B82F6', 'circle-stroke-width': 3, 'circle-stroke-color': colors.white } });
+      map.addLayer({ id: 'me-glow', type: 'circle', source: 'me', paint: { 'circle-radius': 18, 'circle-color': colors.tealLight, 'circle-opacity': 0.25 } });
+      map.addLayer({ id: 'me-dot', type: 'circle', source: 'me', paint: { 'circle-radius': 7, 'circle-color': colors.tealLight, 'circle-stroke-width': 3, 'circle-stroke-color': colors.white } });
       syncData();
     });
 

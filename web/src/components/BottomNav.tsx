@@ -1,13 +1,15 @@
+import type { Icon } from '@phosphor-icons/react';
+import { MapTrifold, ListBullets, Broadcast, Chats, User } from '@phosphor-icons/react';
 import { useApp } from '../context/AppContext';
 
 export type TabKey = 'map' | 'list' | 'statuses' | 'chats' | 'profile';
 
-const TABS: { key: TabKey; label: string; icon: string }[] = [
-  { key: 'map', label: 'Map', icon: '🗺️' },
-  { key: 'list', label: 'List', icon: '☰' },
-  { key: 'statuses', label: 'Statuses', icon: '📡' },
-  { key: 'chats', label: 'Chats', icon: '💬' },
-  { key: 'profile', label: 'Profile', icon: '👤' },
+const TABS: { key: TabKey; label: string; icon: Icon }[] = [
+  { key: 'map', label: 'Map', icon: MapTrifold },
+  { key: 'list', label: 'List', icon: ListBullets },
+  { key: 'statuses', label: 'Statuses', icon: Broadcast },
+  { key: 'chats', label: 'Chats', icon: Chats },
+  { key: 'profile', label: 'Profile', icon: User },
 ];
 
 export function BottomNav({ active, onChange }: { active: TabKey; onChange: (t: TabKey) => void }) {
@@ -16,13 +18,17 @@ export function BottomNav({ active, onChange }: { active: TabKey; onChange: (t: 
 
   return (
     <nav className="bottom-nav">
-      {TABS.map((t) => (
-        <button key={t.key} className={`nav-item ${active === t.key ? 'active' : ''}`} onClick={() => onChange(t.key)}>
-          <span style={{ fontSize: 20, lineHeight: 1 }}>{t.icon}</span>
-          <span>{t.label}</span>
-          {t.key === 'statuses' && badge > 0 && <span className="nav-badge">{badge}</span>}
-        </button>
-      ))}
+      {TABS.map((t) => {
+        const isActive = active === t.key;
+        const Glyph = t.icon;
+        return (
+          <button key={t.key} className={`nav-item ${isActive ? 'active' : ''}`} onClick={() => onChange(t.key)}>
+            <Glyph size={24} weight={isActive ? 'fill' : 'regular'} />
+            <span>{t.label}</span>
+            {t.key === 'statuses' && badge > 0 && <span className="nav-badge">{badge}</span>}
+          </button>
+        );
+      })}
     </nav>
   );
 }

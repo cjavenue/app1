@@ -5,7 +5,7 @@ import type { JoinState } from '../hooks/useMeetups';
 
 function JoinControl({ state, onRequest }: { state: JoinState | undefined; onRequest: () => void }) {
   if (state === 'accepted')
-    return <span className="chip" style={{ background: 'rgba(52,211,153,0.15)', color: 'var(--green)' }}>✓ Joined</span>;
+    return <span className="chip" style={{ background: 'rgba(26,167,160,0.15)', color: 'var(--teal)' }}>✓ Joined</span>;
   if (state === 'pending') return <span className="chip">Requested</span>;
   if (state === 'declined') return <span className="chip faint">Declined</span>;
   return (
@@ -33,7 +33,7 @@ export function StatusesScreen() {
           <div style={{ marginBottom: 12 }}>
             <div className="section-label" style={{ margin: '4px 0 10px' }}>REQUESTS TO JOIN YOU</div>
             {meetups.incoming.map((req) => (
-              <div key={req.id} className="card" style={{ marginBottom: 12, borderColor: 'rgba(45,212,191,0.3)' }}>
+              <div key={req.id} className="card" style={{ marginBottom: 12, borderColor: 'rgba(26,167,160,0.3)' }}>
                 <div>
                   <strong>{req.requesterNickname}</strong> wants to join your status
                 </div>

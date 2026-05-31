@@ -1,15 +1,24 @@
-// Palette mirrors the mobile app (dark canvas + turquoise→green accents).
+// Brand palette: dark slate canvas + teal (primary) & yellow (highlight).
 export const colors = {
-  bg: '#0B0F14',
-  sheet: '#0E1116',
-  sheetElevated: '#161B22',
-  scrim: 'rgba(6, 9, 12, 0.55)',
-  turquoise: '#2DD4BF',
-  turquoiseLight: '#5EEAD4',
-  green: '#34D399',
-  online: '#22C55E',
+  bg: '#0F1316',
+  sheet: '#151A1F',
+  sheetElevated: '#1E252C',
+  slate: '#363B41',
+  scrim: 'rgba(8, 11, 14, 0.55)',
+  // Brand
+  teal: '#1AA7A0',
+  tealLight: '#3FC8C0',
+  tealDark: '#14857F',
+  yellow: '#F5C518',
+  yellowLight: '#FFD84D',
+  // Back-compat aliases (older references)
+  turquoise: '#1AA7A0',
+  turquoiseLight: '#3FC8C0',
+  green: '#1AA7A0',
+  online: '#1AA7A0',
+  // Neutrals / functional
   text: '#FFFFFF',
-  textMuted: '#9BA4AF',
+  textMuted: '#9AA3AD',
   textFaint: '#6B7280',
   border: 'rgba(255,255,255,0.08)',
   danger: '#F87171',

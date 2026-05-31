@@ -10,7 +10,7 @@ function Card({ status }: { status: NearbyStatus }) {
     <div className="card" style={{ position: 'absolute', inset: 0, borderRadius: 28, padding: 22, display: 'flex', flexDirection: 'column' }}>
       <div style={{ position: 'absolute', right: -30, bottom: -30, fontSize: 240, opacity: 0.04 }}>{cat.emoji}</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(45,212,191,0.15)', display: 'grid', placeItems: 'center', fontSize: 22 }}>{cat.emoji}</div>
+        <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(26,167,160,0.15)', display: 'grid', placeItems: 'center', fontSize: 22 }}>{cat.emoji}</div>
         <span className="muted" style={{ fontWeight: 700, letterSpacing: 2 }}>{cat.label.toUpperCase()}</span>
         <span style={{ flex: 1 }} />
         <span className="chip">🕐 {timeLeft(status.expiresAt)}</span>
@@ -87,7 +87,7 @@ export function ListScreen() {
           <button onClick={skip} className="fab" style={{ width: 64, height: 64, background: 'var(--elevated)', color: 'var(--danger)', fontSize: 26 }}>
             ✕
           </button>
-          <button onClick={connect} className="fab" style={{ width: 70, height: 70, background: 'linear-gradient(120deg,var(--turquoise),var(--green))', color: '#000', fontSize: 26 }}>
+          <button onClick={connect} className="fab" style={{ width: 70, height: 70, background: 'linear-gradient(120deg,var(--teal),var(--yellow))', color: '#000', fontSize: 26 }}>
             💬
           </button>
         </div>

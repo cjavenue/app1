@@ -1,6 +1,6 @@
+import type { StyleSpecification } from 'maplibre-gl';
+
 const STADIA_DARK = 'https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json';
-// Keyless dark basemap — no API key, no domain authorization. Default for web.
-const CARTO_DARK = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
 // Runtime config from /public/config.js (works on any host, no env vars needed).
 // Falls back to Vite build-time env vars if the runtime config isn't present.
@@ -20,11 +20,38 @@ export const config = {
   nearbyRadiusMeters: 5000,
 } as const;
 
-/** A usable dark style is always available (keyless CARTO fallback). */
-export const mapStyleUrl = (): string => {
+// Keyless dark RASTER basemap (CARTO dark_all). Raster PNG tiles are far more
+// reliable than a vector-GL style on iOS PWAs — no glyphs, sprites, or vector
+// tile web worker to silently fail. This is the default for web.
+const cartoDarkRaster = (): StyleSpecification => ({
+  version: 8,
+  sources: {
+    carto: {
+      type: 'raster',
+      tiles: [
+        'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+      ],
+      tileSize: 256,
+      attribution: '© OpenStreetMap, © CARTO',
+    },
+  },
+  layers: [
+    { id: 'bg', type: 'background', paint: { 'background-color': '#0b0f14' } },
+    { id: 'carto', type: 'raster', source: 'carto' },
+  ],
+});
+
+/**
+ * A usable dark style is always available. Returns a style URL when one is
+ * explicitly configured (custom or Stadia), otherwise a keyless raster style.
+ */
+export const mapStyle = (): string | StyleSpecification => {
   if (config.map.style) return config.map.style;
   if (config.map.stadiaApiKey) return `${STADIA_DARK}?api_key=${config.map.stadiaApiKey}`;
-  return CARTO_DARK;
+  return cartoDarkRaster();
 };
 export const isMapConfigured = () => true;
 export const isSupabaseConfigured = () =>

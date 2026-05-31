@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { colors } from '../theme';
-import { config, mapStyleUrl } from '../lib/config';
+import { config, mapStyle } from '../lib/config';
 import { circlePolygon } from '../lib/geo';
 import type { Coords } from '../hooks/useLocation';
 import type { NearbyUser } from '../hooks/usePresence';
@@ -34,15 +34,17 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
   const [error, setError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   // Init once.
   useEffect(() => {
     if (!hostRef.current || mapRef.current) return;
+    const host = hostRef.current;
     let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
-        container: hostRef.current,
-        style: mapStyleUrl(),
+        container: host,
+        style: mapStyle(),
         center: coords ? [coords.longitude, coords.latitude] : [0, 20],
         zoom: coords ? 13.5 : 1,
         attributionControl: false,
@@ -62,6 +64,7 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
     map.on('load', () => {
       ready.current = true;
       setError(null);
+      setLoaded(true);
       map.addSource('radius', { type: 'geojson', data: empty });
       map.addLayer({ id: 'radius-fill', type: 'fill', source: 'radius', paint: { 'fill-color': colors.turquoise, 'fill-opacity': 0.06 } });
       map.addLayer({ id: 'radius-line', type: 'line', source: 'radius', paint: { 'line-color': colors.turquoise, 'line-width': 1.5, 'line-opacity': 0.4 } });
@@ -77,10 +80,17 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
       syncData();
     });
 
-    // MapLibre sometimes needs a nudge when mounted in a flex container.
+    // MapLibre needs a nudge when mounted in a flex container, and again once
+    // the layout settles on iOS (where the initial measure can be 0-height and
+    // leave the canvas blank). A ResizeObserver keeps the canvas in sync.
     requestAnimationFrame(() => map.resize());
+    const t = setTimeout(() => map.resize(), 400);
+    const ro = new ResizeObserver(() => map.resize());
+    ro.observe(host);
 
     return () => {
+      clearTimeout(t);
+      ro.disconnect();
       map.remove();
       mapRef.current = null;
       ready.current = false;
@@ -112,6 +122,23 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
   return (
     <>
       <div ref={hostRef} className="map-host" />
+      {!loaded && !error && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            transform: 'translateY(-50%)',
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: 13,
+            pointerEvents: 'none',
+          }}
+        >
+          Loading map…
+        </div>
+      )}
       {error && (
         <div
           style={{

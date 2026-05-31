@@ -8,11 +8,11 @@ import { useApp } from '../context/AppContext';
 import { MapTab } from '../screens/MapTab';
 import { ProfileTab } from '../screens/ProfileTab';
 import { StatusesTab } from '../screens/StatusesTab';
+import { ListTab } from '../screens/ListTab';
 import { PlaceholderTab } from '../screens/PlaceholderTab';
 
 const Tab = createBottomTabNavigator();
 
-const ListTab = () => <PlaceholderTab title="List" icon="list" />;
 const ChatsTab = () => <PlaceholderTab title="Chats" icon="chatbubble-outline" />;
 
 const ICONS: Record<string, { on: keyof typeof Ionicons.glyphMap; off: keyof typeof Ionicons.glyphMap }> = {

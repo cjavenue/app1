@@ -18,8 +18,12 @@ Implemented so far:
    asks to **Enable your location** (or *Set location manually*). After the user
    grants permission we flag their live position, fit the map to a 5 km radius,
    and surface everyone online within it.
-3. **Bottom tab navigation** — Map · List · Statuses · Chats · Profile.
-   Map, Statuses, and Profile are live; List and Chats are "coming soon" stubs.
+3. **Bottom tab navigation** — Map · List · Statuses · Chats · Profile (with a
+   live badge on Statuses for incoming join requests). Map, List, Statuses, and
+   Profile are live; Chats is a "coming soon" stub.
+   - **List** is a swipeable card deck of nearby statuses (category, time-left,
+     body, distance, host). Swipe left / tap ✕ to skip; swipe right / tap the
+     chat button to **ask to join**.
 4. **Ephemeral profiles** — see below.
 5. **Statuses ("Post Status")** — a short (≤100 char) post in a category
    (Food/Sports/Walk/Games/Study/Travel/Other), pinned at your location and

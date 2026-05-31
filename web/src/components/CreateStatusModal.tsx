@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { X } from '@phosphor-icons/react';
 import { CATEGORIES, STATUS_MAX_LENGTH, type CategoryKey } from '../lib/categories';
 import type { PostResult } from '../hooks/useStatuses';
 
@@ -32,9 +33,9 @@ export function CreateStatusModal({ onClose, onPost }: Props) {
         <button
           onClick={onClose}
           className="fab"
-          style={{ width: 36, height: 36, background: 'var(--elevated)', border: 'none', fontSize: 18 }}
+          style={{ width: 36, height: 36, background: 'var(--elevated)', border: 'none' }}
         >
-          ✕
+          <X size={18} />
         </button>
       </div>
 
@@ -68,7 +69,7 @@ export function CreateStatusModal({ onClose, onPost }: Props) {
               className={`chip ${c.key === category ? 'active' : ''}`}
               onClick={() => setCategory(c.key)}
             >
-              <span>{c.emoji}</span>
+              <c.Glyph size={18} />
               {c.label}
             </button>
           ))}

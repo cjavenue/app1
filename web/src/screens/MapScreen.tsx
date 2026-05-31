@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { NavigationArrow, Plus } from '@phosphor-icons/react';
 import { MapView } from '../components/MapView';
 import { CreateStatusModal } from '../components/CreateStatusModal';
 import { useApp } from '../context/AppContext';
@@ -21,13 +22,13 @@ export function MapScreen() {
 
       <div className="fab-col">
         <button className="fab light" title="Recenter" onClick={() => setRecenter((n) => n + 1)}>
-          ➤
+          <NavigationArrow size={20} weight="fill" />
         </button>
       </div>
 
       <div className="post-cta">
         <button className="btn btn-grad" onClick={() => setComposer(true)}>
-          + Post Status
+          <Plus size={20} weight="bold" /> Post Status
         </button>
       </div>
 

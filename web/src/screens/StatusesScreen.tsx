@@ -1,3 +1,4 @@
+import { Check, Broadcast } from '@phosphor-icons/react';
 import { useApp } from '../context/AppContext';
 import { categoryOf } from '../lib/categories';
 import { distanceLabel, timeAgo } from '../lib/format';
@@ -5,7 +6,11 @@ import type { JoinState } from '../hooks/useMeetups';
 
 function JoinControl({ state, onRequest }: { state: JoinState | undefined; onRequest: () => void }) {
   if (state === 'accepted')
-    return <span className="chip" style={{ background: 'rgba(26,167,160,0.15)', color: 'var(--teal)' }}>✓ Joined</span>;
+    return (
+      <span className="chip" style={{ background: 'rgba(26,167,160,0.15)', color: 'var(--teal)', gap: 4 }}>
+        <Check size={15} weight="bold" /> Joined
+      </span>
+    );
   if (state === 'pending') return <span className="chip">Requested</span>;
   if (state === 'declined') return <span className="chip faint">Declined</span>;
   return (
@@ -53,9 +58,9 @@ export function StatusesScreen() {
 
         {statuses.statuses.length === 0 && (
           <div style={{ textAlign: 'center', paddingTop: 90 }} className="muted">
-            <div style={{ fontSize: 40 }}>📡</div>
-            <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>Nothing nearby yet</div>
-            <div className="faint" style={{ marginTop: 4 }}>Be the first — tap “+ Post Status” on the map.</div>
+            <Broadcast size={40} weight="regular" />
+            <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 10 }}>Nothing nearby yet</div>
+            <div className="faint" style={{ marginTop: 4 }}>Be the first — tap “Post Status” on the map.</div>
           </div>
         )}
 
@@ -64,8 +69,8 @@ export function StatusesScreen() {
           return (
             <div key={s.id} className="card" style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--turquoise-light)', fontWeight: 700, fontSize: 13 }}>
-                  {cat.emoji} {cat.label}
+                <span style={{ color: 'var(--teal-light)', fontWeight: 700, fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <cat.Glyph size={16} /> {cat.label}
                 </span>
                 <span className="faint" style={{ fontSize: 13 }}>{timeAgo(s.createdAt)}</span>
               </div>

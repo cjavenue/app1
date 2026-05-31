@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ChatsCircle } from '@phosphor-icons/react';
 import { AppProvider } from './context/AppContext';
 import { BottomNav, type TabKey } from './components/BottomNav';
 import { LocationGate } from './components/LocationGate';
@@ -12,8 +13,8 @@ function ComingSoon({ title }: { title: string }) {
     <div className="screen">
       <div className="header"><h1>{title}</h1></div>
       <div className="muted" style={{ textAlign: 'center', marginTop: 80 }}>
-        <div style={{ fontSize: 40 }}>💬</div>
-        <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 8 }}>Coming soon</div>
+        <ChatsCircle size={44} weight="regular" />
+        <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 10 }}>Coming soon</div>
         <div className="faint" style={{ marginTop: 4 }}>We're building this piece by piece.</div>
       </div>
     </div>

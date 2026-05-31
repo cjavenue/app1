@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { SealCheck, Warning, CaretRight, Lightning, User, PencilSimple, CalendarBlank, Export, GoogleLogo, Check } from '@phosphor-icons/react';
 import { useApp } from '../context/AppContext';
 import { initials, memberSince } from '../lib/format';
 
@@ -62,7 +63,7 @@ function RenameModal({ onClose }: { onClose: () => void }) {
         <input className="field" value={value} maxLength={20} onChange={(e) => setValue(e.target.value)} />
         <div style={{ minHeight: 22, marginTop: 8, fontSize: 13, fontWeight: 600 }}>
           {status === 'checking' && <span className="muted">Checking…</span>}
-          {status === 'ok' && <span style={{ color: 'var(--green)' }}>✓ Available</span>}
+          {status === 'ok' && <span style={{ color: 'var(--teal)', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Check size={14} weight="bold" /> Available</span>}
           {status === 'bad' && <span style={{ color: 'var(--danger)' }}>Unavailable or invalid</span>}
         </div>
         {error && <div style={{ color: 'var(--danger)', fontWeight: 600 }}>{error}</div>}
@@ -181,47 +182,49 @@ export function ProfileScreen() {
           <div style={{ width: 110, height: 110, borderRadius: 55, margin: '8px auto 16px', background: 'linear-gradient(135deg,var(--teal),var(--yellow))', color: '#0F1316', display: 'grid', placeItems: 'center', fontSize: 38, fontWeight: 800 }}>
             {initials(profile.nickname)}
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800 }}>{profile.nickname}</div>
+          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>{profile.nickname}</div>
         </div>
 
         {profile.emailVerified ? (
           <div className="card" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, borderColor: 'rgba(26,167,160,0.35)' }}>
-            <span style={{ fontSize: 20 }}>🛡️</span>
+            <SealCheck size={22} weight="fill" color="var(--teal)" />
             <div>
-              <div style={{ fontWeight: 700 }}>Email verified</div>
-              <div className="muted" style={{ fontSize: 13 }}>{profile.email}</div>
+              <div className="t-title">Email verified</div>
+              <div className="muted t-meta">{profile.email}</div>
             </div>
           </div>
         ) : (
           <button className="card" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, width: '100%', textAlign: 'left', borderColor: 'rgba(251,191,36,0.35)' }} onClick={() => setVerify(true)}>
-            <span style={{ fontSize: 20 }}>⚠️</span>
+            <Warning size={22} weight="fill" color="var(--yellow)" />
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700 }}>Verify your email</div>
-              <div className="muted" style={{ fontSize: 13 }}>Unverified profiles are removed after 24 hours.</div>
+              <div className="t-title">Verify your email</div>
+              <div className="muted t-meta">Unverified profiles are removed after 24 hours.</div>
             </div>
-            <span className="muted">›</span>
+            <CaretRight size={18} className="muted" />
           </button>
         )}
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
           <div className="card" style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: 22 }}>⚡</div>
-            <div style={{ fontSize: 22, fontWeight: 800 }}>{profile.meetups}</div>
-            <div className="muted" style={{ fontSize: 13 }}>Meetups</div>
+            <Lightning size={22} weight="fill" color="var(--yellow)" />
+            <div style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>{profile.meetups}</div>
+            <div className="muted t-meta">Meetups</div>
           </div>
           <div className="card" style={{ flex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: 18 }}>👤</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: profile.gender ? 'var(--text)' : 'var(--faint)' }}>{profile.gender ?? 'Not set'}</div>
-            <div className="muted" style={{ fontSize: 13 }}>Gender</div>
+            <User size={22} weight="regular" color="var(--teal)" />
+            <div style={{ fontSize: 17, fontWeight: 700, marginTop: 4, color: profile.gender ? 'var(--text)' : 'var(--faint)' }}>{profile.gender ?? 'Not set'}</div>
+            <div className="muted t-meta">Gender</div>
           </div>
         </div>
 
         <div className="card">
           <div className="section-label">NICKNAME</div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-            <span style={{ fontSize: 16 }}>{profile.nickname}</span>
+            <span className="t-body">{profile.nickname}</span>
             {!profile.nicknameChanged && (
-              <button onClick={() => setRename(true)} style={{ color: 'var(--turquoise-light)', fontWeight: 600 }}>✎ Change</button>
+              <button onClick={() => setRename(true)} style={{ color: 'var(--teal-light)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                <PencilSimple size={15} /> Change
+              </button>
             )}
           </div>
           <div style={{ height: 1, background: 'var(--border)', margin: '16px 0' }} />
@@ -229,7 +232,7 @@ export function ProfileScreen() {
           <div className="muted" style={{ marginTop: 6 }}>{profile.interests.length ? profile.interests.join(', ') : 'None set'}</div>
           <div style={{ height: 1, background: 'var(--border)', margin: '16px 0' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span className="muted">📅 Member since</span>
+            <span className="muted" style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}><CalendarBlank size={16} /> Member since</span>
             <span className="muted">{memberSince(profile.createdAt)}</span>
           </div>
         </div>
@@ -237,7 +240,7 @@ export function ProfileScreen() {
         {profile.emailVerified && (
           <div style={{ marginTop: 20 }}>
             <div className="muted" style={{ textAlign: 'center', fontSize: 13, marginBottom: 10 }}>Sign in faster next time</div>
-            <button className="btn btn-ghost" onClick={p.signInWithGoogle}>Continue with Google</button>
+            <button className="btn btn-ghost" onClick={p.signInWithGoogle}><GoogleLogo size={20} weight="bold" /> Continue with Google</button>
           </div>
         )}
 
@@ -247,10 +250,10 @@ export function ProfileScreen() {
             style={{ display: 'flex', gap: 12, alignItems: 'center', width: '100%', textAlign: 'left', marginTop: 20 }}
             onClick={() => (install.canPrompt ? install.prompt() : undefined)}
           >
-            <span style={{ fontSize: 20 }}>⬇️</span>
+            <Export size={22} color="var(--teal)" />
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700 }}>Add to Home Screen</div>
-              <div className="muted" style={{ fontSize: 13 }}>
+              <div className="t-title">Add to Home Screen</div>
+              <div className="muted t-meta">
                 {install.isIos ? 'Tap Share → “Add to Home Screen”' : install.canPrompt ? 'Install Nearby as an app' : 'Use your browser menu to install'}
               </div>
             </div>

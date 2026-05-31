@@ -113,19 +113,57 @@ textarea {
 
 /* Screen header */
 .header {
-  padding: calc(env(safe-area-inset-top) + 14px) 20px 12px;
+  padding: calc(env(safe-area-inset-top) + 16px) 20px 10px;
 }
 .header h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Icons align with text by default */
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Rounded icon container (category tiles, avatars-as-icons) */
+.icon-tile {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--elevated);
+  color: var(--teal);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+/* Type scale */
+.t-hero {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.t-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+.t-body {
+  font-size: 15px;
+}
+.t-meta {
+  font-size: 13px;
 }
 
 /* Cards */
 .card {
   background: var(--sheet);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 16px;
 }
 

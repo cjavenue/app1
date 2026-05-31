@@ -1,3 +1,4 @@
+import { MapPin } from '@phosphor-icons/react';
 import { useApp } from '../context/AppContext';
 
 /** First-run gate: blurs the app and asks for location permission. */
@@ -15,15 +16,15 @@ export function LocationGate() {
             height: 86,
             borderRadius: 43,
             background: 'var(--elevated)',
+            color: 'var(--teal)',
             display: 'grid',
             placeItems: 'center',
             margin: '0 auto 22px',
-            fontSize: 34,
           }}
         >
-          📍
+          <MapPin size={38} weight="fill" />
         </div>
-        <h2 style={{ margin: '0 0 12px', fontSize: 26 }}>Enable your location</h2>
+        <h2 style={{ margin: '0 0 12px', fontSize: 24 }}>Enable your location</h2>
         <p className="muted" style={{ margin: '0 0 28px', fontSize: 16, lineHeight: 1.4 }}>
           See what's happening around you and connect with people nearby in real time
         </p>

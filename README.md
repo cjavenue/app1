@@ -6,6 +6,11 @@ MapLibre + Stadia Maps, and Supabase.
 
 > Working title — rename `name` in `app.json` anytime.
 
+> **Two front-ends, one backend.** This directory is the **Expo mobile app**.
+> An installable **PWA** version lives in [`/web`](./web) (Vite + React +
+> MapLibre GL JS) and talks to the **same Supabase project** — see
+> [`web/README.md`](./web/README.md).
+
 ## Status
 
 Implemented so far:

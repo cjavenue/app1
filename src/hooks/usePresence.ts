@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase, hasSupabase } from '../lib/supabase';
 import { config } from '../lib/config';
 import { getDeviceId } from '../services/identity';
+import { ensureSession } from '../services/session';
 import type { Coords } from './useLocation';
 
 export interface NearbyUser {
@@ -47,14 +48,6 @@ export function usePresence(coords: Coords | null, visible: boolean): PresenceSt
 
     let cancelled = false;
     const sb = supabase; // captured non-null for the async closures below
-
-    const ensureSession = async () => {
-      const { data } = await sb.auth.getSession();
-      if (!data.session) {
-        // Anonymous sign-in = our "anonymous device identity" on the server.
-        await sb.auth.signInAnonymously();
-      }
-    };
 
     const beat = async () => {
       try {

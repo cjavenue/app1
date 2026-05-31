@@ -6,9 +6,9 @@ MapLibre + Stadia Maps, and Supabase.
 
 > Working title — rename `name` in `app.json` anytime.
 
-## Status — step 1 of the build
+## Status
 
-Implemented so far (the two foundation screens):
+Implemented so far:
 
 1. **Map screen** — dark MapLibre canvas (Stadia style) with a live location puck, a 5 km
    "neighborhood" radius ring, floating controls (layers · compose · recenter),
@@ -18,6 +18,24 @@ Implemented so far (the two foundation screens):
    asks to **Enable your location** (or *Set location manually*). After the user
    grants permission we flag their live position, fit the map to a 5 km radius,
    and surface everyone online within it.
+3. **Bottom tab navigation** — Map · List · Statuses · Chats · Profile.
+   Map and Profile are live; the rest are "coming soon" stubs.
+4. **Ephemeral profiles** — see below.
+
+## Profiles & identity lifecycle
+
+- **Auto-create** — once location is shared, the user gets a profile with a
+  random unique nickname (e.g. *"Lucky Heron 77"*), no signup.
+- **Ephemeral by default** — an unverified profile (and its presence) is
+  **hard-deleted 24h after creation** by `cleanup_expired_profiles()`
+  (scheduled with `pg_cron`).
+- **Email verification** makes it permanent — the anonymous user is upgraded to
+  a permanent one and survives cleanup.
+- **One-time rename** — the nickname can be changed exactly once; uniqueness
+  (case-insensitive), length (4–20), charset, and a profanity blocklist are
+  enforced **server-side** in `set_nickname()`.
+- **Cross-device sign-in** — after verifying, Google/Apple buttons appear
+  (provider wiring is the next step; the UI is in place).
 
 ## Tech stack
 
@@ -25,24 +43,27 @@ Implemented so far (the two foundation screens):
 | -------------- | ------------------------------------------ |
 | App            | Expo (React Native) + TypeScript, New Arch |
 | Map            | MapLibre (`@maplibre/maplibre-react-native`) + Stadia Maps dark style |
+| Navigation     | React Navigation (bottom tabs)             |
 | Location       | `expo-location` (foreground)               |
 | Backend        | Supabase (Postgres + PostGIS + Auth)       |
-| Identity       | Anonymous Supabase auth (no PII)           |
+| Identity       | Anonymous Supabase auth → email-verified (no PII until verified) |
 | UI accents     | Turquoise → light-green palette            |
 
 ## Project layout
 
 ```
-App.tsx                      App shell: map + overlays + first-run gate
+App.tsx                      Root: navigation + provider + location gate
 src/
-  components/                MapScreen, OnlineBadge, MapControls,
-                             PostStatusButton, LocationPermissionSheet
-  hooks/                     useLocation (permission + watcher),
-                             usePresence (heartbeat + nearby query)
+  navigation/Tabs.tsx        Bottom tab bar (Map/List/Statuses/Chats/Profile)
+  screens/                   MapTab, ProfileTab, PlaceholderTab
+  components/                MapScreen, OnlineBadge, MapControls, PostStatusButton,
+                             LocationPermissionSheet, EditNicknameModal, VerifyEmailModal
+  context/AppContext.tsx     Shared location + presence + profile state
+  hooks/                     useLocation, usePresence, useProfile
   lib/                       config, supabase client, geo helpers
-  services/identity.ts       anonymous device id
+  services/                  identity (device id), session (single anon session)
   theme/colors.ts            palette + brand gradient
-supabase/migrations/         PostGIS schema, RLS, presence RPCs
+supabase/migrations/         0001 presence (PostGIS, RLS) · 0002 profiles + 24h cleanup
 ```
 
 ## Setup
@@ -61,13 +82,14 @@ supabase/migrations/         PostGIS schema, RLS, presence RPCs
    Until these are set, the map shows a placeholder and the online count
    stays at 1 (just you) — the UI still runs.
 
-3. **Database** — apply the schema to your Supabase project:
-
-   ```bash
-   supabase db push        # or paste supabase/migrations/0001_init.sql
-   ```
-
-   Then enable **Anonymous sign-ins** in Supabase → Authentication → Providers.
+3. **Database** — apply both migrations to your Supabase project (SQL editor or
+   `supabase db push`): `0001_init.sql` then `0002_profiles.sql`. Then:
+   - Enable **Anonymous sign-ins** (Authentication → Providers).
+   - Enable the **pg_cron** extension (Database → Extensions) and uncomment the
+     `cron.schedule(...)` block at the bottom of `0002_profiles.sql` so
+     unverified profiles are purged every 15 min.
+   - For email verification in production, configure **custom SMTP**
+     (Authentication → Email). Supabase's built-in mailer works for light dev use.
 
 4. **Native build** — `@maplibre/maplibre-react-native` needs a custom dev
    client (it does **not** run in Expo Go), but requires no extra tokens — the

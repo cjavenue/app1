@@ -17,18 +17,23 @@ export type RenameResult =
   | { ok: true }
   | { ok: false; reason: 'invalid' | 'taken' | 'already_changed' | 'error' };
 
-export function useProfile(locationReady: boolean) {
+export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    if (!hasSupabase || !supabase) return;
+    if (!hasSupabase || !supabase) {
+      setError('Backend not configured (missing Supabase URL/key).');
+      return;
+    }
     const sb = supabase;
     setLoading(true);
+    setError(null);
     try {
       await ensureSession();
-      await sb.rpc('create_profile');
-      const { data: row } = await sb.from('profiles').select('*').maybeSingle();
+      const { error: rpcErr } = await sb.rpc('create_profile');
+      const { data: row, error: selErr } = await sb.from('profiles').select('*').maybeSingle();
       const { data: userData } = await sb.auth.getUser();
       const user = userData?.user;
       if (row) {
@@ -42,7 +47,13 @@ export function useProfile(locationReady: boolean) {
           email: user?.email ?? null,
           emailVerified: Boolean(user?.email_confirmed_at),
         });
+        setError(null);
+      } else {
+        // Surface the real reason instead of a generic message.
+        setError(rpcErr?.message || selErr?.message || 'Profile not found after create_profile().');
       }
+    } catch (e) {
+      setError((e as Error).message);
     } finally {
       setLoading(false);
     }
@@ -103,13 +114,15 @@ export function useProfile(locationReady: boolean) {
     }
   }, []);
 
+  // A profile only needs a session, not location — load it on mount.
   useEffect(() => {
-    if (locationReady) reload();
-  }, [locationReady, reload]);
+    reload();
+  }, [reload]);
 
   return {
     profile,
     loading,
+    error,
     reload,
     checkNickname,
     rename,

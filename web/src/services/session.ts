@@ -8,8 +8,15 @@ export function ensureSession(): Promise<void> {
   if (!sessionPromise) {
     sessionPromise = (async () => {
       const { data } = await supabase.auth.getSession();
-      if (!data.session) await supabase.auth.signInAnonymously();
-    })();
+      if (!data.session) {
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error) throw new Error(`Anonymous sign-in failed: ${error.message}`);
+      }
+    })().catch((e) => {
+      // Don't cache the failure — allow a later retry.
+      sessionPromise = null;
+      throw e;
+    });
   }
   return sessionPromise;
 }

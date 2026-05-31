@@ -25,7 +25,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [visible] = useState(true);
   const { onlineCount, nearby } = usePresence(coords, visible);
   const locationReady = coords !== null;
-  const profile = useProfile(locationReady);
+  const profile = useProfile();
   const statuses = useStatuses(coords);
   const meetups = useMeetups(locationReady);
 

@@ -53,7 +53,7 @@ jobs:
         uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: web/dist
-          production-deploy: true
+          production-deploy: ${{ github.ref == 'refs/heads/main' }}
           deploy-message: ${{ github.event.head_commit.message }}
           enable-pull-request-comment: false
           enable-commit-comment: false

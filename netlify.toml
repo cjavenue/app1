@@ -1,0 +1,26 @@
+# Netlify deploy config for the /web PWA (build runs in the web/ subdir).
+# Connect this repo in Netlify; no dashboard build settings needed.
+# IMPORTANT: set these env vars in Netlify (Site settings → Environment):
+#   VITE_STADIA_API_KEY, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback (existing files are served first).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Don't let the service worker get stuck in cache so PWA updates roll out.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"

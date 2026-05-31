@@ -13,10 +13,12 @@ import { config, isMapConfigured, mapStyleUrl } from '../lib/config';
 import { circlePolygon } from '../lib/geo';
 import type { Coords } from '../hooks/useLocation';
 import type { NearbyUser } from '../hooks/usePresence';
+import type { NearbyStatus } from '../hooks/useStatuses';
 
 interface Props {
   coords: Coords | null;
   nearby: NearbyUser[];
+  statuses?: NearbyStatus[];
   recenterSignal: number; // bump to recenter the camera on the user
 }
 
@@ -29,7 +31,7 @@ const DEFAULT_ZOOM = 13.5;
  * Falls back to a styled placeholder when no Stadia key is configured yet, so
  * the rest of the UI (overlays, sheet) remains demonstrable.
  */
-export function MapScreen({ coords, nearby, recenterSignal }: Props) {
+export function MapScreen({ coords, nearby, statuses = [], recenterSignal }: Props) {
   const camera = useRef<CameraRef>(null);
 
   useEffect(() => {
@@ -64,6 +66,16 @@ export function MapScreen({ coords, nearby, recenterSignal }: Props) {
       id: u.id,
       properties: { id: u.id },
       geometry: { type: 'Point', coordinates: [u.longitude, u.latitude] },
+    })),
+  };
+
+  const statusFeatures: GeoJSON.FeatureCollection = {
+    type: 'FeatureCollection',
+    features: statuses.map((s) => ({
+      type: 'Feature',
+      id: s.id,
+      properties: { id: s.id },
+      geometry: { type: 'Point', coordinates: [s.longitude, s.latitude] },
     })),
   };
 
@@ -116,6 +128,28 @@ export function MapScreen({ coords, nearby, recenterSignal }: Props) {
               circleColor: colors.green,
               circleStrokeWidth: 2,
               circleStrokeColor: colors.bg,
+            }}
+          />
+        </GeoJSONSource>
+      )}
+
+      {statuses.length > 0 && (
+        <GeoJSONSource id="statuses" data={statusFeatures}>
+          <Layer
+            type="circle"
+            id="status-glow"
+            source="statuses"
+            style={{ circleRadius: 16, circleColor: colors.turquoise, circleOpacity: 0.2 }}
+          />
+          <Layer
+            type="circle"
+            id="status-dot"
+            source="statuses"
+            style={{
+              circleRadius: 8,
+              circleColor: colors.turquoise,
+              circleStrokeWidth: 2,
+              circleStrokeColor: colors.white,
             }}
           />
         </GeoJSONSource>

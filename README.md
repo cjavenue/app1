@@ -19,8 +19,14 @@ Implemented so far:
    grants permission we flag their live position, fit the map to a 5 km radius,
    and surface everyone online within it.
 3. **Bottom tab navigation** — Map · List · Statuses · Chats · Profile.
-   Map and Profile are live; the rest are "coming soon" stubs.
+   Map, Statuses, and Profile are live; List and Chats are "coming soon" stubs.
 4. **Ephemeral profiles** — see below.
+5. **Statuses ("Post Status")** — a short (≤100 char) post in a category
+   (Food/Sports/Walk/Games/Study/Travel/Other), pinned at your location and
+   visible to people within 5 km. One active status per user (a new post
+   replaces the old); each auto-expires after ~3h. Shown as map pins and in the
+   Statuses feed. Reads go through the `nearby_statuses` RPC (coarse coords,
+   no contact info).
 
 ## Profiles & identity lifecycle
 
@@ -83,8 +89,9 @@ supabase/migrations/         0001 presence (PostGIS, RLS) · 0002 profiles + 24h
    Until these are set, the map shows a placeholder and the online count
    stays at 1 (just you) — the UI still runs.
 
-3. **Database** — apply both migrations to your Supabase project (SQL editor or
-   `supabase db push`): `0001_init.sql` then `0002_profiles.sql`. Then:
+3. **Database** — apply the migrations in order (SQL editor or
+   `supabase db push`): `0001_init.sql`, `0002_profiles.sql`, `0003_statuses.sql`.
+   Then:
    - Enable **Anonymous sign-ins** (Authentication → Providers).
    - Enable the **pg_cron** extension (Database → Extensions) and uncomment the
      `cron.schedule(...)` block at the bottom of `0002_profiles.sql` so

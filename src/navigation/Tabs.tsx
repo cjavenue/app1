@@ -4,12 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { MapTab } from '../screens/MapTab';
 import { ProfileTab } from '../screens/ProfileTab';
+import { StatusesTab } from '../screens/StatusesTab';
 import { PlaceholderTab } from '../screens/PlaceholderTab';
 
 const Tab = createBottomTabNavigator();
 
 const ListTab = () => <PlaceholderTab title="List" icon="list" />;
-const StatusesTab = () => <PlaceholderTab title="Statuses" icon="radio-outline" />;
 const ChatsTab = () => <PlaceholderTab title="Chats" icon="chatbubble-outline" />;
 
 const ICONS: Record<string, { on: keyof typeof Ionicons.glyphMap; off: keyof typeof Ionicons.glyphMap }> = {

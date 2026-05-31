@@ -37,6 +37,12 @@ drop policy if exists "own profile select" on public.profiles;
 create policy "own profile select" on public.profiles
   for select using (auth.uid() = user_id);
 
+-- create_profile() runs as the caller (security invoker), so the caller needs
+-- an INSERT policy to create their own row.
+drop policy if exists "own profile insert" on public.profiles;
+create policy "own profile insert" on public.profiles
+  for insert with check (auth.uid() = user_id);
+
 drop policy if exists "own profile update" on public.profiles;
 create policy "own profile update" on public.profiles
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);

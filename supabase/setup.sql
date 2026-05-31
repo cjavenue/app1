@@ -169,6 +169,12 @@ drop policy if exists "own profile select" on public.profiles;
 create policy "own profile select" on public.profiles
   for select using (auth.uid() = user_id);
 
+-- create_profile() runs as the caller (security invoker), so the caller needs
+-- an INSERT policy to create their own row.
+drop policy if exists "own profile insert" on public.profiles;
+create policy "own profile insert" on public.profiles
+  for insert with check (auth.uid() = user_id);
+
 drop policy if exists "own profile update" on public.profiles;
 create policy "own profile update" on public.profiles
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
@@ -384,6 +390,12 @@ alter table public.statuses enable row level security;
 drop policy if exists "own statuses select" on public.statuses;
 create policy "own statuses select" on public.statuses
   for select using (auth.uid() = user_id);
+
+-- post_status() runs as the caller (security invoker), so the caller needs an
+-- INSERT policy to create their own status row.
+drop policy if exists "own statuses insert" on public.statuses;
+create policy "own statuses insert" on public.statuses
+  for insert with check (auth.uid() = user_id);
 
 drop policy if exists "own statuses delete" on public.statuses;
 create policy "own statuses delete" on public.statuses

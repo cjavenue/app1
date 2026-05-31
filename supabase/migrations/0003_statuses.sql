@@ -33,6 +33,12 @@ drop policy if exists "own statuses select" on public.statuses;
 create policy "own statuses select" on public.statuses
   for select using (auth.uid() = user_id);
 
+-- post_status() runs as the caller (security invoker), so the caller needs an
+-- INSERT policy to create their own status row.
+drop policy if exists "own statuses insert" on public.statuses;
+create policy "own statuses insert" on public.statuses
+  for insert with check (auth.uid() = user_id);
+
 drop policy if exists "own statuses delete" on public.statuses;
 create policy "own statuses delete" on public.statuses
   for delete using (auth.uid() = user_id);

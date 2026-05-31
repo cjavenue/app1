@@ -10,3 +10,12 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+interface Window {
+  __NEARBY_CONFIG__?: {
+    STADIA_API_KEY?: string;
+    MAP_STYLE?: string;
+    SUPABASE_URL?: string;
+    SUPABASE_ANON_KEY?: string;
+  };
+}

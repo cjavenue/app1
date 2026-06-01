@@ -178,11 +178,11 @@ export function ProfileScreen() {
     <div className="screen">
       <div className="header"><h1>Profile</h1></div>
       <div className="scroll" style={{ padding: '0 16px 24px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 22 }}>
-          <div style={{ width: 110, height: 110, borderRadius: 55, margin: '8px auto 16px', background: 'linear-gradient(135deg,var(--teal),var(--yellow))', color: '#0F1316', display: 'grid', placeItems: 'center', fontSize: 38, fontWeight: 800 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <div style={{ width: 96, height: 96, borderRadius: 48, margin: '8px auto 14px', background: 'linear-gradient(135deg,var(--teal),var(--yellow))', color: '#0F1316', display: 'grid', placeItems: 'center', fontSize: 32, fontWeight: 800 }}>
             {initials(profile.nickname)}
           </div>
-          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>{profile.nickname}</div>
+          <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.02em' }}>{profile.nickname}</div>
         </div>
 
         {profile.emailVerified ? (
@@ -212,7 +212,7 @@ export function ProfileScreen() {
           </div>
           <div className="card" style={{ flex: 1, textAlign: 'center' }}>
             <User size={22} weight="regular" color="var(--teal)" />
-            <div style={{ fontSize: 17, fontWeight: 700, marginTop: 4, color: profile.gender ? 'var(--text)' : 'var(--faint)' }}>{profile.gender ?? 'Not set'}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color: profile.gender ? 'var(--text)' : 'var(--faint)' }}>{profile.gender ?? 'Not set'}</div>
             <div className="muted t-meta">Gender</div>
           </div>
         </div>

@@ -6,15 +6,17 @@ export type TabKey = 'map' | 'list' | 'statuses' | 'chats' | 'profile';
 
 const TABS: { key: TabKey; label: string; icon: Icon }[] = [
   { key: 'map', label: 'Map', icon: MapTrifold },
-  { key: 'list', label: 'List', icon: ListBullets },
-  { key: 'statuses', label: 'Statuses', icon: Broadcast },
+  { key: 'list', label: 'Nearby', icon: ListBullets },
+  { key: 'statuses', label: 'Activity', icon: Broadcast },
   { key: 'chats', label: 'Chats', icon: Chats },
   { key: 'profile', label: 'Profile', icon: User },
 ];
 
 export function BottomNav({ active, onChange }: { active: TabKey; onChange: (t: TabKey) => void }) {
-  const { meetups } = useApp();
-  const badge = meetups.incoming.length;
+  const { posts } = useApp();
+  // Badge = comments on my active post.
+  const mine = posts.posts.find((p) => p.isMine);
+  const badge = mine?.commentCount ?? 0;
 
   return (
     <nav className="bottom-nav">

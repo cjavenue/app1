@@ -79,6 +79,21 @@ export function usePosts() {
     if (lastBounds.current) return loadBounds(lastBounds.current);
   }, [loadBounds]);
 
+  // Load posts in a generous box around a point (~22km) for the feed/activity
+  // views, which don't have a map viewport of their own.
+  const loadAround = useCallback(
+    (coords: Coords) => {
+      const d = 0.2;
+      return loadBounds({
+        minLat: coords.latitude - d,
+        minLng: coords.longitude - d,
+        maxLat: coords.latitude + d,
+        maxLng: coords.longitude + d,
+      });
+    },
+    [loadBounds]
+  );
+
   const create = useCallback(
     async (
       body: string,
@@ -181,5 +196,5 @@ export function usePosts() {
     return { ok: true };
   }, []);
 
-  return { posts, loadBounds, refresh, create, deleteMine, listComments, addComment, deleteComment };
+  return { posts, loadBounds, loadAround, refresh, create, deleteMine, listComments, addComment, deleteComment };
 }

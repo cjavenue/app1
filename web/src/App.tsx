@@ -14,8 +14,8 @@ function ComingSoon({ title }: { title: string }) {
       <div className="header"><h1>{title}</h1></div>
       <div className="muted" style={{ textAlign: 'center', marginTop: 80 }}>
         <ChatsCircle size={44} weight="regular" />
-        <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 10 }}>Coming soon</div>
-        <div className="faint" style={{ marginTop: 4 }}>We're building this piece by piece.</div>
+        <div className="t-title" style={{ color: 'var(--text)', marginTop: 10 }}>Coming soon</div>
+        <div className="faint t-meta" style={{ marginTop: 4 }}>We're building this piece by piece.</div>
       </div>
     </div>
   );

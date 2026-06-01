@@ -58,7 +58,7 @@ function RenameModal({ onClose }: { onClose: () => void }) {
     <div className="overlay" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="grabber" />
-        <h2 style={{ margin: '0 0 6px', fontSize: 20 }}>Change your name</h2>
+        <h2 className="sheet-title">Change your name</h2>
         <p className="muted" style={{ margin: '0 0 16px' }}>You can only do this once.</p>
         <input className="field" value={value} maxLength={20} onChange={(e) => setValue(e.target.value)} />
         <div style={{ minHeight: 22, marginTop: 8, fontSize: 13, fontWeight: 600 }}>
@@ -106,7 +106,7 @@ function VerifyModal({ onClose }: { onClose: () => void }) {
         <div className="grabber" />
         {step === 'email' ? (
           <>
-            <h2 style={{ margin: '0 0 6px', fontSize: 20 }}>Verify your email</h2>
+            <h2 className="sheet-title">Verify your email</h2>
             <p className="muted" style={{ margin: '0 0 16px' }}>Unverified profiles are removed after 24 hours.</p>
             <input className="field" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             {error && <div style={{ color: 'var(--danger)', marginTop: 10 }}>{error}</div>}
@@ -116,7 +116,7 @@ function VerifyModal({ onClose }: { onClose: () => void }) {
           </>
         ) : (
           <>
-            <h2 style={{ margin: '0 0 6px', fontSize: 20 }}>Enter the code</h2>
+            <h2 className="sheet-title">Enter the code</h2>
             <p className="muted" style={{ margin: '0 0 16px' }}>Sent a 6-digit code to {email}.</p>
             <input className="field" style={{ textAlign: 'center', letterSpacing: 8, fontSize: 22 }} inputMode="numeric" maxLength={6} value={code} onChange={(e) => setCode(e.target.value)} />
             {error && <div style={{ color: 'var(--danger)', marginTop: 10 }}>{error}</div>}
@@ -239,7 +239,7 @@ export function ProfileScreen() {
 
         {profile.emailVerified && (
           <div style={{ marginTop: 20 }}>
-            <div className="muted" style={{ textAlign: 'center', fontSize: 13, marginBottom: 10 }}>Sign in faster next time</div>
+            <div className="muted t-meta" style={{ textAlign: 'center', marginBottom: 10 }}>Sign in faster next time</div>
             <button className="btn btn-ghost" onClick={p.signInWithGoogle}><GoogleLogo size={20} weight="bold" /> Continue with Google</button>
           </div>
         )}

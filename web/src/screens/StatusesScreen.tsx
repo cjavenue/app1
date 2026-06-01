@@ -39,10 +39,10 @@ export function StatusesScreen() {
             <div className="section-label" style={{ margin: '4px 0 10px' }}>REQUESTS TO JOIN YOU</div>
             {meetups.incoming.map((req) => (
               <div key={req.id} className="card" style={{ marginBottom: 12, borderColor: 'rgba(26,167,160,0.3)' }}>
-                <div>
+                <div className="t-body">
                   <strong>{req.requesterNickname}</strong> wants to join your status
                 </div>
-                <div className="muted" style={{ fontStyle: 'italic', marginTop: 6 }}>“{req.statusBody}”</div>
+                <div className="muted t-meta" style={{ fontStyle: 'italic', marginTop: 6 }}>“{req.statusBody}”</div>
                 <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
                   <button className="btn btn-ghost" style={{ height: 44 }} onClick={() => respond(req.id, false)}>
                     Decline
@@ -59,8 +59,8 @@ export function StatusesScreen() {
         {statuses.statuses.length === 0 && (
           <div style={{ textAlign: 'center', paddingTop: 90 }} className="muted">
             <Broadcast size={40} weight="regular" />
-            <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 10 }}>Nothing nearby yet</div>
-            <div className="faint" style={{ marginTop: 4 }}>Be the first — tap “Post Status” on the map.</div>
+            <div className="t-title" style={{ color: 'var(--text)', marginTop: 10 }}>Nothing nearby yet</div>
+            <div className="faint t-meta" style={{ marginTop: 4 }}>Be the first — tap “Post Status” on the map.</div>
           </div>
         )}
 
@@ -69,12 +69,12 @@ export function StatusesScreen() {
           return (
             <div key={s.id} className="card" style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--teal-light)', fontWeight: 700, fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span className="label-jakarta" style={{ color: 'var(--teal-light)', fontSize: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   <cat.Glyph size={16} /> {cat.label}
                 </span>
-                <span className="faint" style={{ fontSize: 13 }}>{timeAgo(s.createdAt)}</span>
+                <span className="faint" style={{ fontSize: 12 }}>{timeAgo(s.createdAt)}</span>
               </div>
-              <div style={{ fontSize: 16, lineHeight: 1.4, marginTop: 12 }}>{s.body}</div>
+              <div className="t-body" style={{ marginTop: 10 }}>{s.body}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 }}>
                 <span className="muted" style={{ fontSize: 14 }}>
                   {s.isMine ? 'You' : s.nickname} · {distanceLabel(s.distanceMeters)}

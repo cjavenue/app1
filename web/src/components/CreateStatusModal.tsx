@@ -27,8 +27,8 @@ export function CreateStatusModal({ onClose, onPost }: Props) {
     <div className="full-modal">
       <div className="header" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, borderBottom: '1px solid var(--border)' }}>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 24 }}>Create Status</h1>
-          <div className="muted" style={{ marginTop: 4 }}>Share what you're up to nearby</div>
+          <h1>Create Status</h1>
+          <div className="muted t-meta" style={{ marginTop: 4 }}>Share what you're up to nearby</div>
         </div>
         <button
           onClick={onClose}

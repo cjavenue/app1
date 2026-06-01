@@ -20,7 +20,7 @@ function Card({ status }: { status: NearbyStatus }) {
       </div>
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-        <div className="t-hero" style={{ fontSize: 28 }}>{status.body}</div>
+        <div className="t-hero">{status.body}</div>
       </div>
 
       <span className="chip" style={{ alignSelf: 'flex-start', gap: 6 }}><NavigationArrow size={14} weight="fill" /> {distanceLabel(status.distanceMeters)}</span>
@@ -69,8 +69,8 @@ export function ListScreen() {
           <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', textAlign: 'center' }} className="muted">
             <div>
               <Cards size={40} weight="regular" />
-              <div style={{ fontWeight: 700, color: 'var(--text)', marginTop: 10 }}>No more cards nearby</div>
-              <div className="faint" style={{ marginTop: 4 }}>New statuses show up here as people post.</div>
+              <div className="t-title" style={{ color: 'var(--text)', marginTop: 10 }}>No more cards nearby</div>
+              <div className="faint t-meta" style={{ marginTop: 4 }}>New statuses show up here as people post.</div>
             </div>
           </div>
         ) : (

@@ -28,3 +28,26 @@ export function memberSince(iso: string): string {
   const d = new Date(iso);
   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
 }
+
+export type Liveness = 'fresh' | 'fading' | 'expiring';
+
+/**
+ * Post liveness over its 1-hour life, weighted to nudge action near the end:
+ *   fresh    🟢  0–30m   (#1AA7A0 teal-green)
+ *   fading   🟠  30–50m  (#F5C518 amber)
+ *   expiring 🔴  50–60m  (#F87171 red)
+ * Computed from minutes ELAPSED since createdAt.
+ */
+export function liveness(createdAtIso: string): Liveness {
+  const mins = (Date.now() - new Date(createdAtIso).getTime()) / 60000;
+  if (mins < 30) return 'fresh';
+  if (mins < 50) return 'fading';
+  return 'expiring';
+}
+
+export const LIVENESS_COLOR: Record<Liveness, string> = {
+  fresh: '#22C55E',
+  fading: '#F5C518',
+  expiring: '#F87171',
+};
+

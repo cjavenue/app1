@@ -1,17 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavigationArrow, Plus } from '@phosphor-icons/react';
 import { MapView } from '../components/MapView';
-import { CreateStatusModal } from '../components/CreateStatusModal';
+import { CreatePostModal } from '../components/CreatePostModal';
+import { PostCard } from '../components/PostCard';
 import { useApp } from '../context/AppContext';
+import type { MapPost } from '../hooks/usePosts';
 
 export function MapScreen() {
-  const { coords, nearby, displayCount, statuses } = useApp();
+  const { coords, nearby, displayCount, posts } = useApp();
   const [recenter, setRecenter] = useState(0);
   const [composer, setComposer] = useState(false);
+  const [open, setOpen] = useState<MapPost | null>(null);
+
+  // Refresh visible posts periodically so liveness + expiry stay current.
+  useEffect(() => {
+    const t = setInterval(() => posts.refresh(), 30_000);
+    return () => clearInterval(t);
+  }, [posts]);
 
   return (
     <div className="screen">
-      <MapView coords={coords} nearby={nearby} statuses={statuses.statuses} recenterSignal={recenter} />
+      <MapView
+        coords={coords}
+        nearby={nearby}
+        posts={posts.posts}
+        recenterSignal={recenter}
+        onBoundsChange={posts.loadBounds}
+        onOpenPost={setOpen}
+      />
 
       <div className="online-badge">
         <span className="dot" />
@@ -27,12 +43,13 @@ export function MapScreen() {
       </div>
 
       <div className="post-cta">
-        <button className="btn btn-grad" onClick={() => setComposer(true)}>
-          <Plus size={20} weight="bold" /> Post Status
+        <button className="btn btn-grad" onClick={() => setComposer(true)} disabled={!coords}>
+          <Plus size={20} weight="bold" /> Post
         </button>
       </div>
 
-      {composer && <CreateStatusModal onClose={() => setComposer(false)} onPost={statuses.post} />}
+      {composer && coords && <CreatePostModal coords={coords} onClose={() => setComposer(false)} />}
+      {open && <PostCard post={open} onClose={() => setOpen(null)} />}
     </div>
   );
 }

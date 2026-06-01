@@ -2,17 +2,20 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { colors } from '../theme';
-import { config, mapStyle } from '../lib/config';
-import { circlePolygon } from '../lib/geo';
+import { mapStyle } from '../lib/config';
+import { categoryOf } from '../lib/categories';
+import { liveness, LIVENESS_COLOR } from '../lib/format';
 import type { Coords } from '../hooks/useLocation';
 import type { NearbyUser } from '../hooks/usePresence';
-import type { NearbyStatus } from '../hooks/useStatuses';
+import type { MapPost, Bounds } from '../hooks/usePosts';
 
 interface Props {
   coords: Coords | null;
   nearby: NearbyUser[];
-  statuses: NearbyStatus[];
+  posts: MapPost[];
   recenterSignal: number;
+  onBoundsChange: (b: Bounds) => void;
+  onOpenPost: (post: MapPost) => void;
 }
 
 const empty: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
@@ -28,13 +31,27 @@ function pointFC(items: { latitude: number; longitude: number }[]): GeoJSON.Feat
   };
 }
 
-/** Dark MapLibre GL JS canvas with the 5km ring, nearby users, and status pins. */
-export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
+/** Dark MapLibre canvas with the "me"/nearby dots and tappable category post pins. */
+export function MapView({ coords, nearby, posts, recenterSignal, onBoundsChange, onOpenPost }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [, setTick] = useState(0); // re-project pins on every map move
+
+  const boundsCb = useRef(onBoundsChange);
+  boundsCb.current = onBoundsChange;
+
+  const emitBounds = (map: maplibregl.Map) => {
+    const b = map.getBounds();
+    boundsCb.current({
+      minLat: b.getSouth(),
+      minLng: b.getWest(),
+      maxLat: b.getNorth(),
+      maxLng: b.getEast(),
+    });
+  };
 
   // Init once.
   useEffect(() => {
@@ -46,7 +63,7 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
         container: host,
         style: mapStyle(),
         center: coords ? [coords.longitude, coords.latitude] : [0, 20],
-        zoom: coords ? 13.5 : 1,
+        zoom: coords ? 14 : 1,
         attributionControl: false,
       });
     } catch (e) {
@@ -56,33 +73,31 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
     mapRef.current = map;
 
     map.on('error', (e: maplibregl.ErrorEvent) => {
-      // Surface the first meaningful error so it can be diagnosed on-device.
-      const msg = e?.error?.message ?? 'Unknown map error';
-      setError(msg);
+      setError(e?.error?.message ?? 'Unknown map error');
     });
+
+    let raf = 0;
+    const reproject = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setTick((n) => n + 1));
+    };
+    map.on('move', reproject);
+    map.on('moveend', () => emitBounds(map));
 
     map.on('load', () => {
       ready.current = true;
       setError(null);
       setLoaded(true);
-      map.addSource('radius', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'radius-fill', type: 'fill', source: 'radius', paint: { 'fill-color': colors.teal, 'fill-opacity': 0.06 } });
-      map.addLayer({ id: 'radius-line', type: 'line', source: 'radius', paint: { 'line-color': colors.teal, 'line-width': 1.5, 'line-opacity': 0.4 } });
       map.addSource('nearby', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'nearby-glow', type: 'circle', source: 'nearby', paint: { 'circle-radius': 14, 'circle-color': colors.teal, 'circle-opacity': 0.18 } });
-      map.addLayer({ id: 'nearby-dot', type: 'circle', source: 'nearby', paint: { 'circle-radius': 6, 'circle-color': colors.teal, 'circle-stroke-width': 2, 'circle-stroke-color': colors.bg } });
-      map.addSource('statuses', { type: 'geojson', data: empty });
-      map.addLayer({ id: 'status-glow', type: 'circle', source: 'statuses', paint: { 'circle-radius': 16, 'circle-color': colors.yellow, 'circle-opacity': 0.22 } });
-      map.addLayer({ id: 'status-dot', type: 'circle', source: 'statuses', paint: { 'circle-radius': 8, 'circle-color': colors.yellow, 'circle-stroke-width': 2, 'circle-stroke-color': colors.bg } });
+      map.addLayer({ id: 'nearby-glow', type: 'circle', source: 'nearby', paint: { 'circle-radius': 13, 'circle-color': colors.teal, 'circle-opacity': 0.15 } });
+      map.addLayer({ id: 'nearby-dot', type: 'circle', source: 'nearby', paint: { 'circle-radius': 5, 'circle-color': colors.teal, 'circle-stroke-width': 2, 'circle-stroke-color': colors.bg } });
       map.addSource('me', { type: 'geojson', data: empty });
       map.addLayer({ id: 'me-glow', type: 'circle', source: 'me', paint: { 'circle-radius': 18, 'circle-color': colors.tealLight, 'circle-opacity': 0.25 } });
       map.addLayer({ id: 'me-dot', type: 'circle', source: 'me', paint: { 'circle-radius': 7, 'circle-color': colors.tealLight, 'circle-stroke-width': 3, 'circle-stroke-color': colors.white } });
-      syncData();
+      syncDots();
+      emitBounds(map);
     });
 
-    // MapLibre needs a nudge when mounted in a flex container, and again once
-    // the layout settles on iOS (where the initial measure can be 0-height and
-    // leave the canvas blank). A ResizeObserver keeps the canvas in sync.
     requestAnimationFrame(() => map.resize());
     const t = setTimeout(() => map.resize(), 400);
     const ro = new ResizeObserver(() => map.resize());
@@ -90,6 +105,7 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
 
     return () => {
       clearTimeout(t);
+      cancelAnimationFrame(raf);
       ro.disconnect();
       map.remove();
       mapRef.current = null;
@@ -98,44 +114,52 @@ export function MapView({ coords, nearby, statuses, recenterSignal }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const syncData = () => {
+  const syncDots = () => {
     const map = mapRef.current;
     if (!map || !ready.current) return;
     const setData = (id: string, data: GeoJSON.FeatureCollection) => {
       const src = map.getSource(id) as maplibregl.GeoJSONSource | undefined;
       src?.setData(data as GeoJSON.GeoJSON);
     };
-    setData('radius', coords ? (circlePolygon(coords.longitude, coords.latitude, config.nearbyRadiusMeters) as unknown as GeoJSON.FeatureCollection) : empty);
     setData('nearby', pointFC(nearby));
-    setData('statuses', pointFC(statuses));
     setData('me', coords ? pointFC([coords]) : empty);
   };
 
-  useEffect(syncData, [coords, nearby, statuses]);
+  useEffect(syncDots, [coords, nearby]);
 
   useEffect(() => {
     if (mapRef.current && coords) {
-      mapRef.current.flyTo({ center: [coords.longitude, coords.latitude], zoom: 13.5, duration: 700 });
+      mapRef.current.flyTo({ center: [coords.longitude, coords.latitude], zoom: 14, duration: 700 });
     }
   }, [coords, recenterSignal]);
+
+  const map = mapRef.current;
 
   return (
     <>
       <div ref={hostRef} className="map-host" />
+
+      {/* Post pins projected onto the canvas */}
+      {map && ready.current && posts.map((p) => {
+        const pt = map.project([p.longitude, p.latitude]);
+        const cat = categoryOf(p.category);
+        const color = LIVENESS_COLOR[liveness(p.createdAt)];
+        return (
+          <button
+            key={p.id}
+            onClick={() => onOpenPost(p)}
+            className="map-pin"
+            style={{ left: pt.x, top: pt.y, borderColor: color }}
+            aria-label={`${cat.label} post by ${p.nickname}`}
+          >
+            <cat.Glyph size={20} weight="fill" color={color} />
+            {p.commentCount > 0 && <span className="map-pin-badge">{p.commentCount}</span>}
+          </button>
+        );
+      })}
+
       {!loaded && !error && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            right: 0,
-            textAlign: 'center',
-            transform: 'translateY(-50%)',
-            color: 'rgba(255,255,255,0.5)',
-            fontSize: 13,
-            pointerEvents: 'none',
-          }}
-        >
+        <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, textAlign: 'center', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.5)', fontSize: 13, pointerEvents: 'none' }}>
           Loading map…
         </div>
       )}

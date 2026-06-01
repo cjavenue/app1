@@ -14,7 +14,7 @@ function Card({ status }: { status: NearbyStatus }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div className="icon-tile"><cat.Glyph size={22} /></div>
-        <span className="muted" style={{ fontWeight: 700, letterSpacing: 2, fontSize: 13 }}>{cat.label.toUpperCase()}</span>
+        <span className="muted label-jakarta" style={{ fontSize: 14 }}>{cat.label}</span>
         <span style={{ flex: 1 }} />
         <span className="chip" style={{ gap: 6 }}><Clock size={15} /> {timeLeft(status.expiresAt)}</span>
       </div>
@@ -30,8 +30,8 @@ function Card({ status }: { status: NearbyStatus }) {
           {initials(status.nickname)}
         </div>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 17 }}>{status.nickname}</div>
-          <div className="faint" style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>HOST</div>
+          <div style={{ fontWeight: 700, fontSize: 18 }}>{status.nickname}</div>
+          <div className="faint label-jakarta" style={{ fontSize: 12 }}>HOST</div>
         </div>
       </div>
     </div>

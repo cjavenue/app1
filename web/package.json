@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/supabase-js": "^2.106.2",
     "maplibre-gl": "^5.24.0",

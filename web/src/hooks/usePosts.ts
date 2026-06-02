@@ -116,7 +116,7 @@ export function usePosts() {
           const { error: upErr } = await supabase.storage
             .from(BUCKET)
             .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-          if (upErr) return { ok: false, message: 'Image upload failed. Try again.' };
+          if (upErr) return { ok: false, message: `Image upload failed: ${upErr.message}` };
           imagePath = path;
           imageUrl = supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
         } catch (e) {
@@ -139,7 +139,7 @@ export function usePosts() {
             ? 'Your text is too long (140 max).'
             : error.message.includes('empty_post')
               ? 'Add a photo or some text.'
-              : 'Could not post. Try again.',
+              : `Could not post: ${error.message}`,
         };
       }
       await refresh();

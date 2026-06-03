@@ -45,14 +45,19 @@ const cartoDarkRaster = (): StyleSpecification => ({
 });
 
 /**
- * A usable dark style is always available. Returns a style URL when one is
- * explicitly configured (custom or Stadia), otherwise a keyless raster style.
+ * Default map style. Uses Stadia "Alidade Smooth Dark" — with an API key if one
+ * is provided, otherwise the keyless URL (works where the domain is authorized
+ * in the Stadia dashboard). MapView auto-falls back to cartoFallback() if this
+ * fails to load, so the map can never go black.
  */
 export const mapStyle = (): string | StyleSpecification => {
   if (config.map.style) return config.map.style;
-  if (config.map.stadiaApiKey) return `${STADIA_DARK}?api_key=${config.map.stadiaApiKey}`;
-  return cartoDarkRaster();
+  return config.map.stadiaApiKey ? `${STADIA_DARK}?api_key=${config.map.stadiaApiKey}` : STADIA_DARK;
 };
+
+/** Keyless raster fallback (used if the primary style errors). */
+export const cartoFallback = (): StyleSpecification => cartoDarkRaster();
+
 export const isMapConfigured = () => true;
 export const isSupabaseConfigured = () =>
   config.supabase.url.length > 0 && config.supabase.anonKey.length > 0;

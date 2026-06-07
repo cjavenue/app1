@@ -49,7 +49,7 @@ export function useLocation(): UseLocation {
           setPermission('denied');
           resolve(false);
         },
-        { enableHighAccuracy: false, timeout: 15_000 }
+        { enableHighAccuracy: false, timeout: 20_000, maximumAge: 60_000 }
       );
     });
   }, [startWatch]);
